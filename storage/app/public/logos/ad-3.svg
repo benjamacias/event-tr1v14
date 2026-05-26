@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="360" viewBox="0 0 1600 360" role="img" aria-label="Publicidad Evento Stand">
+  <rect width="1600" height="360" fill="#ffffff"/>
+  <rect x="44" y="44" width="1512" height="272" rx="18" fill="#7c2d12"/>
+  <text x="96" y="150" fill="#fed7aa" font-family="Arial, sans-serif" font-size="72" font-weight="800">Gracias por visitar nuestro stand</text>
+  <text x="96" y="236" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="600">Completa la trivia y participa por el premio final</text>
+  <path d="M1300 95h120l-60 170z" fill="#fed7aa"/>
+  <circle cx="1360" cy="180" r="44" fill="#ffffff"/>
+</svg>

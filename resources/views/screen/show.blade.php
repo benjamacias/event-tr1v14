@@ -1,0 +1,86 @@
+@extends('layouts.app')
+
+@section('content')
+<section x-data="leaderboardScreen()" x-init="init()" class="flex min-h-screen flex-col bg-zinc-950 p-6 text-white">
+    <div class="grid min-h-0 flex-1 grid-cols-[400px_1fr] gap-6">
+        <aside class="flex flex-col items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+            <div class="w-full text-center">
+                @if ($logoPath)
+                    <img src="{{ asset('storage/'.$logoPath) }}" alt="Ianus SA" class="mx-auto max-h-32 object-contain">
+                @else
+                    <div class="text-5xl font-black">IANUS SA</div>
+                @endif
+            </div>
+
+            <div class="rounded-lg bg-white p-4 text-zinc-950">{!! $qrSvg !!}</div>
+            <p class="text-center text-2xl font-bold">Escanea y participa</p>
+        </aside>
+
+        <div class="flex min-h-0 flex-col">
+            <header class="mb-5">
+                <p class="text-lg font-semibold uppercase tracking-wide text-cyan-300">Pizarra de lideres</p>
+                <h1 class="text-5xl font-black">Trivia Ianus SA</h1>
+            </header>
+
+            <div class="min-h-0 flex-1 overflow-hidden rounded-lg border border-zinc-800">
+                <table class="w-full text-left">
+                    <thead class="bg-cyan-300 text-zinc-950">
+                        <tr>
+                            <th class="px-5 py-4 text-xl">#</th>
+                            <th class="px-5 py-4 text-xl">Participante</th>
+                            <th class="px-5 py-4 text-xl">Puntaje</th>
+                            <th class="px-5 py-4 text-xl">Set</th>
+                            <th class="px-5 py-4 text-xl">Tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-800 bg-zinc-900">
+                        <template x-for="(row, index) in rows" :key="index + row.name + row.set">
+                            <tr>
+                                <td class="px-5 py-4 text-2xl font-bold" x-text="index + 1"></td>
+                                <td class="px-5 py-4 text-2xl font-semibold" x-text="row.name"></td>
+                                <td class="px-5 py-4 text-2xl" x-text="row.score"></td>
+                                <td class="px-5 py-4 text-xl text-zinc-300" x-text="row.set"></td>
+                                <td class="px-5 py-4 text-2xl font-bold text-cyan-300" x-text="row.time ?? '-'"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <section class="mt-6 h-[24vh] min-h-[180px] overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
+        @if ($providerLogos->isNotEmpty())
+            @foreach ($providerLogos as $logo)
+                <div x-show="providerIndex === {{ $loop->index }}" x-transition.opacity class="flex h-full w-full items-center justify-center">
+                    <img src="{{ asset('storage/'.$logo->image_path) }}" alt="{{ $logo->name }}" class="h-full w-full object-fill">
+                </div>
+            @endforeach
+        @else
+            <div class="flex h-full w-full items-center justify-center text-4xl font-black text-zinc-900">
+                Publicidad
+            </div>
+        @endif
+    </section>
+</section>
+
+<script>
+function leaderboardScreen() {
+    return {
+        rows: [],
+        providerIndex: 0,
+        providerCount: {{ max($providerLogos->count(), 1) }},
+        init() {
+            this.load();
+            setInterval(() => this.load(), 3000);
+            setInterval(() => this.providerIndex = (this.providerIndex + 1) % this.providerCount, 3500);
+        },
+        async load() {
+            const response = await fetch('{{ route('api.leaderboard') }}');
+            const payload = await response.json();
+            this.rows = payload.data;
+        }
+    };
+}
+</script>
+@endsection

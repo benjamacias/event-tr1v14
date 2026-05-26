@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: ianus-event-trivia
+    env: docker
+    plan: starter
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: ianus-event-trivia-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ianus-event-trivia-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: ianus-event-trivia-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: ianus-event-trivia-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ianus-event-trivia-db
+          property: password
+
+databases:
+  - name: ianus-event-trivia-db
+    plan: starter
