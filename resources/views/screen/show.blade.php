@@ -50,17 +50,21 @@
     </div>
 
     <section class="mt-6 h-[24vh] min-h-[180px] overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
-        @if ($providerLogos->isNotEmpty())
-            @foreach ($providerLogos as $logo)
-                <div x-show="providerIndex === {{ $loop->index }}" x-transition.opacity class="flex h-full w-full items-center justify-center">
-                    <img src="{{ asset('storage/'.$logo->image_path) }}" alt="{{ $logo->name }}" class="h-full w-full object-fill">
-                </div>
-            @endforeach
-        @else
+        <template x-if="currentProvider()">
+            <div class="flex h-full w-full items-center justify-center">
+                <img
+                    :src="currentProvider().url"
+                    :alt="currentProvider().name"
+                    class="h-full w-full object-contain"
+                    @error="markProviderFailed(currentProvider().url)"
+                >
+            </div>
+        </template>
+        <template x-if="! currentProvider()">
             <div class="flex h-full w-full items-center justify-center text-4xl font-black text-zinc-900">
                 Publicidad
             </div>
-        @endif
+        </template>
     </section>
 </section>
 
@@ -68,17 +72,34 @@
 function leaderboardScreen() {
     return {
         rows: [],
+        providerLogos: @json($providerAds),
         providerIndex: 0,
-        providerCount: {{ max($providerLogos->count(), 1) }},
+        failedProviderUrls: {},
         init() {
             this.load();
             setInterval(() => this.load(), 3000);
-            setInterval(() => this.providerIndex = (this.providerIndex + 1) % this.providerCount, 3500);
+            setInterval(() => this.nextProvider(), 3500);
         },
         async load() {
             const response = await fetch('{{ route('api.leaderboard') }}');
             const payload = await response.json();
             this.rows = payload.data;
+        },
+        availableProviders() {
+            return this.providerLogos.filter((provider) => provider.url && ! this.failedProviderUrls[provider.url]);
+        },
+        currentProvider() {
+            const providers = this.availableProviders();
+
+            return providers.length ? providers[this.providerIndex % providers.length] : null;
+        },
+        nextProvider() {
+            const providers = this.availableProviders();
+            this.providerIndex = providers.length ? (this.providerIndex + 1) % providers.length : 0;
+        },
+        markProviderFailed(url) {
+            this.failedProviderUrls[url] = true;
+            this.nextProvider();
         }
     };
 }
