@@ -31,6 +31,13 @@ class ParticipantController extends Controller
             ->filter()
             ->map(fn ($id) => (int) $id);
 
+        $playedSets = $playedSets->isEmpty()
+            ? $playedSets
+            : Attempt::query()
+                ->whereIn('question_set_id', $playedSets)
+                ->pluck('question_set_id')
+                ->map(fn ($id) => (int) $id);
+
         $playedByIdentity = Attempt::query()
             ->whereHas('participant', fn ($query) => $query
                 ->whereRaw('LOWER(email) = ?', [$email])
