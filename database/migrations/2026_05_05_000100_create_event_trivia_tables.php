@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->boolean('is_active')->default(true);
+            $table->integer('sort_order')->nullable();
             $table->timestamps();
         });
 

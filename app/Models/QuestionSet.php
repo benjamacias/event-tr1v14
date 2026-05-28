@@ -8,9 +8,12 @@ use Illuminate\Support\Str;
 
 class QuestionSet extends Model
 {
-    protected $fillable = ['name', 'slug', 'is_active'];
+    protected $fillable = ['name', 'slug', 'is_active', 'sort_order'];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'sort_order' => 'integer',
+    ];
 
     protected static function booted(): void
     {

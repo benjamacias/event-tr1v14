@@ -11,6 +11,9 @@ class PlayableQuestionSetPicker
         $sets = QuestionSet::query()
             ->where('is_active', true)
             ->when($excludedSetIds !== [], fn ($query) => $query->whereNotIn('id', $excludedSetIds))
+            ->orderByRaw('sort_order is null')
+            ->orderBy('sort_order')
+            ->orderBy('id')
             ->with(['questions' => fn ($query) => $query
                 ->where('is_active', true)
                 ->with('answerOptions')
@@ -19,6 +22,6 @@ class PlayableQuestionSetPicker
             ->filter(fn (QuestionSet $set) => $set->isPlayable())
             ->values();
 
-        return $sets->isEmpty() ? null : $sets->random();
+        return $sets->first();
     }
 }
