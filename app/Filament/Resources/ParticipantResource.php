@@ -49,7 +49,7 @@ class ParticipantResource extends Resource
             ->filters([
                 SelectFilter::make('question_set_id')
                     ->label('Set')
-                    ->options(fn (): array => QuestionSet::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->options(fn (): array => QuestionSet::query()->orderBy('id')->pluck('name', 'id')->all())
                     ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
                         ? $query->whereHas('attempts', fn (Builder $attempts) => $attempts->where('question_set_id', $data['value']))
                         : $query),

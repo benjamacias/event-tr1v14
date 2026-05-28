@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AttemptResource\Pages;
 use App\Models\Attempt;
+use App\Models\QuestionSet;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -45,7 +46,7 @@ class AttemptResource extends Resource
                 IconColumn::make('duplicate_flag')->label('Duplicado')->boolean(),
             ])
             ->filters([
-                SelectFilter::make('question_set_id')->label('Set')->relationship('questionSet', 'name'),
+                SelectFilter::make('question_set_id')->label('Set')->options(fn (): array => QuestionSet::query()->orderBy('id')->pluck('name', 'id')->all()),
                 SelectFilter::make('correct_answers_count')->label('Correctas')->options([0 => '0', 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5']),
             ])
             ->actions([Tables\Actions\EditAction::make()])

@@ -37,6 +37,7 @@ class QuestionSetResource extends Resource
                 TextColumn::make('questions_count')->counts('questions')->label('Preguntas'),
                 IconColumn::make('is_active')->label('Activo')->boolean(),
             ])
+            ->defaultSort('id', 'asc')
             ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }

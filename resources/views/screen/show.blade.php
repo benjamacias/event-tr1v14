@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<section x-data="leaderboardScreen()" x-init="init()" class="flex min-h-screen flex-col bg-zinc-950 p-6 text-white">
+<section x-data="leaderboardScreen()" x-init="start()" class="flex min-h-screen flex-col bg-zinc-950 p-6 text-white">
     <div class="grid min-h-0 flex-1 grid-cols-[400px_1fr] gap-6">
         <aside class="flex flex-col items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 p-6">
             <div class="w-full text-center">
@@ -56,7 +56,7 @@
                     :src="currentProvider().url"
                     :alt="currentProvider().name"
                     class="h-full w-full object-contain"
-                    @error="markProviderFailed(currentProvider().url)"
+                    x-on:error="markProviderFailed(currentProvider().url)"
                 >
             </div>
         </template>
@@ -75,7 +75,7 @@ function leaderboardScreen() {
         providerLogos: @json($providerAds),
         providerIndex: 0,
         failedProviderUrls: {},
-        init() {
+        start() {
             this.load();
             setInterval(() => this.load(), 3000);
             setInterval(() => this.nextProvider(), 3500);

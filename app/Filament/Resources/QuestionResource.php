@@ -26,7 +26,7 @@ class QuestionResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Select::make('question_set_id')->label('Set')->options(fn () => QuestionSet::query()->pluck('name', 'id'))->required()->searchable(),
+            Select::make('question_set_id')->label('Set')->options(fn () => QuestionSet::query()->orderBy('id')->pluck('name', 'id'))->required()->searchable(),
             Textarea::make('text')->label('Pregunta')->required()->rows(4)->columnSpanFull(),
             Textarea::make('explanation')->label('Aclaracion general')->rows(3)->columnSpanFull(),
             TextInput::make('sort_order')->label('Orden')->numeric()->default(1)->required(),
@@ -43,7 +43,7 @@ class QuestionResource extends Resource
                 TextColumn::make('sort_order')->label('Orden')->sortable(),
                 IconColumn::make('is_active')->label('Activa')->boolean(),
             ])
-            ->filters([SelectFilter::make('question_set_id')->label('Set')->relationship('questionSet', 'name')])
+            ->filters([SelectFilter::make('question_set_id')->label('Set')->options(fn (): array => QuestionSet::query()->orderBy('id')->pluck('name', 'id')->all())])
             ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }
