@@ -21,6 +21,10 @@
             <input name="full_name" value="{{ old('full_name') }}" required class="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-lg outline-none focus:border-cyan-300">
         </label>
         <label class="block">
+            <span class="text-sm font-medium text-zinc-200">Numero de documento</span>
+            <input name="document_number" value="{{ old('document_number') }}" required inputmode="numeric" autocomplete="off" class="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-lg outline-none focus:border-cyan-300">
+        </label>
+        <label class="block">
             <span class="text-sm font-medium text-zinc-200">Mail</span>
             <input type="email" name="email" value="{{ old('email') }}" required class="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-lg outline-none focus:border-cyan-300">
         </label>

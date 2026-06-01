@@ -55,6 +55,7 @@ class ParticipantExportController extends Controller
         $rows = [[
             'Fecha/hora',
             'Nombre y apellido',
+            'Documento',
             'Mail',
             'Celular',
             'Institucion/cargo',
@@ -74,6 +75,7 @@ class ParticipantExportController extends Controller
                     $rows[] = [
                         $attempt->created_at?->format('Y-m-d H:i:s'),
                         $attempt->participant->full_name,
+                        $attempt->participant->document_number,
                         $attempt->participant->email,
                         $attempt->participant->phone,
                         $attempt->participant->institution_role,

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Participant extends Model
 {
-    protected $fillable = ['full_name', 'email', 'phone', 'institution_role', 'consent_accepted'];
+    protected $fillable = ['full_name', 'document_number', 'email', 'phone', 'institution_role', 'consent_accepted'];
 
     protected $casts = ['consent_accepted' => 'boolean'];
 

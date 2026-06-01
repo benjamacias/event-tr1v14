@@ -20,6 +20,7 @@ class Attempt extends Model
         'correct_answers_count',
         'total_time_seconds',
         'duplicate_flag',
+        'device_identifier',
         'user_agent',
         'ip_address',
     ];

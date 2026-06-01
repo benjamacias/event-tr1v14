@@ -7,6 +7,7 @@ use App\Models\AnswerOption;
 use App\Models\Attempt;
 use App\Models\AttemptAnswer;
 use App\Models\Question;
+use App\Services\PlayableQuestionSetPicker;
 use App\Services\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -107,6 +108,45 @@ class TriviaController extends Controller
             'attempt' => $attempt,
             'partialMessage' => $settings->get('final_message_partial', 'Gracias por participar! Respondiste :score/5 preguntas correctamente!'),
             'perfectMessage' => $settings->get('final_message_perfect', 'Felicitaciones!! Respondiste todo perfecto! Tu tiempo final fue de :time. Estás participando por el premio final!'),
+        ]);
+    }
+
+    public function close(Request $request, Attempt $attempt, PlayableQuestionSetPicker $picker): View
+    {
+        $attempt->load('participant');
+
+        $playedSetIds = collect([(int) $attempt->question_set_id]);
+        $deviceIdentifier = $attempt->device_identifier ?: $request->cookie('ianus_device_id');
+
+        if (filled($attempt->participant->document_number)) {
+            $playedSetIds = $playedSetIds->merge(
+                Attempt::query()
+                    ->whereHas('participant', fn ($participantQuery) => $participantQuery
+                        ->where('document_number', $attempt->participant->document_number))
+                    ->pluck('question_set_id')
+                    ->map(fn ($id) => (int) $id)
+            );
+        }
+
+        if (filled($deviceIdentifier)) {
+            $playedSetIds = $playedSetIds->merge(
+                Attempt::query()
+                    ->where('device_identifier', $deviceIdentifier)
+                    ->pluck('question_set_id')
+                    ->map(fn ($id) => (int) $id)
+            );
+        }
+
+        $cookiePlayedSetIds = collect(json_decode($request->cookie('ianus_played_sets', '[]'), true) ?: [])
+            ->filter()
+            ->map(fn ($id) => (int) $id);
+
+        $nextQuestionSet = $picker->pick(
+            $playedSetIds->merge($cookiePlayedSetIds)->unique()->values()->all()
+        );
+
+        return view('trivia.close', [
+            'canPlayAgain' => $nextQuestionSet !== null,
         ]);
     }
 }

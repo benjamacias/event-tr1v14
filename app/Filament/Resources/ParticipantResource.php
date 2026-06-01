@@ -26,6 +26,7 @@ class ParticipantResource extends Resource
     {
         return $form->schema([
             TextInput::make('full_name')->label('Nombre y apellido')->required(),
+            TextInput::make('document_number')->label('Documento')->maxLength(30),
             TextInput::make('email')->label('Mail')->email()->required(),
             TextInput::make('phone')->label('Celular')->required(),
             TextInput::make('institution_role')->label('Institucion/cargo'),
@@ -39,6 +40,7 @@ class ParticipantResource extends Resource
             ->columns([
                 TextColumn::make('created_at')->label('Fecha/hora')->dateTime()->sortable(),
                 TextColumn::make('full_name')->label('Nombre')->searchable(),
+                TextColumn::make('document_number')->label('Documento')->searchable(),
                 TextColumn::make('email')->label('Mail')->searchable(),
                 TextColumn::make('phone')->label('Celular')->searchable(),
                 TextColumn::make('institution_role')->label('Institucion/cargo')->limit(30),

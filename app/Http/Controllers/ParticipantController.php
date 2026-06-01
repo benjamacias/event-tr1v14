@@ -8,7 +8,9 @@ use App\Models\Participant;
 use App\Services\PlayableQuestionSetPicker;
 use App\Services\Settings;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ParticipantController extends Controller
@@ -24,6 +26,8 @@ class ParticipantController extends Controller
 
     public function store(StoreParticipantRequest $request, PlayableQuestionSetPicker $picker): RedirectResponse
     {
+        $deviceIdentifier = $this->deviceIdentifier($request);
+        $documentNumber = $request->validated('document_number');
         $email = mb_strtolower(trim($request->validated('email')));
         $phone = preg_replace('/\s+/', '', $request->validated('phone'));
 
@@ -38,37 +42,45 @@ class ParticipantController extends Controller
                 ->pluck('question_set_id')
                 ->map(fn ($id) => (int) $id);
 
+        $playedByDevice = Attempt::query()
+            ->where('device_identifier', $deviceIdentifier)
+            ->pluck('question_set_id');
+
         $playedByIdentity = Attempt::query()
             ->whereHas('participant', fn ($query) => $query
-                ->whereRaw('LOWER(email) = ?', [$email])
+                ->where('document_number', $documentNumber)
+                ->orWhereRaw('LOWER(email) = ?', [$email])
                 ->orWhere('phone', $phone))
             ->pluck('question_set_id');
 
         $questionSet = $picker->pick(
-            $playedSets->merge($playedByIdentity)->unique()->values()->all()
+            $playedSets->merge($playedByDevice)->merge($playedByIdentity)->unique()->values()->all()
         );
 
         if (! $questionSet) {
             return back()->withErrors(['trivia' => 'La trivia no esta disponible en este momento.'])->withInput();
         }
 
-        // Sin DNI no se puede garantizar identidad unica absoluta; esta validacion bloquea duplicados razonables por email/celular y set.
         $duplicateExists = Attempt::query()
             ->where('question_set_id', $questionSet->id)
-            ->whereHas('participant', fn ($query) => $query
-                ->whereRaw('LOWER(email) = ?', [$email])
-                ->orWhere('phone', $phone))
+            ->where(fn ($query) => $query
+                ->where('device_identifier', $deviceIdentifier)
+                ->orWhereHas('participant', fn ($participantQuery) => $participantQuery
+                    ->where('document_number', $documentNumber)
+                    ->orWhereRaw('LOWER(email) = ?', [$email])
+                    ->orWhere('phone', $phone)))
             ->exists();
 
-        if ($duplicateExists || $playedSets->contains($questionSet->id)) {
+        if ($duplicateExists || $playedSets->contains($questionSet->id) || $playedByDevice->contains($questionSet->id)) {
             return back()->withErrors([
                 'trivia' => 'Ya registramos una participacion para este set con esos datos o dispositivo.',
             ])->withInput();
         }
 
-        $attempt = DB::transaction(function () use ($request, $questionSet, $email, $phone): Attempt {
+        $attempt = DB::transaction(function () use ($request, $questionSet, $documentNumber, $email, $phone, $deviceIdentifier): Attempt {
             $participant = Participant::create([
                 'full_name' => $request->validated('full_name'),
+                'document_number' => $documentNumber,
                 'email' => $email,
                 'phone' => $phone,
                 'institution_role' => $request->validated('institution_role'),
@@ -81,6 +93,7 @@ class ParticipantController extends Controller
                 'status' => Attempt::STATUS_STARTED,
                 'started_at' => now(),
                 'duplicate_flag' => false,
+                'device_identifier' => $deviceIdentifier,
                 'user_agent' => $request->userAgent(),
                 'ip_address' => $request->ip(),
             ]);
@@ -90,6 +103,18 @@ class ParticipantController extends Controller
 
         return redirect()
             ->route('play.show', $attempt)
+            ->cookie('ianus_device_id', $deviceIdentifier, 60 * 24 * 365)
             ->cookie('ianus_played_sets', $playedSets->unique()->values()->toJson(), 60 * 24 * 30);
+    }
+
+    private function deviceIdentifier(Request $request): string
+    {
+        $identifier = (string) $request->cookie('ianus_device_id');
+
+        if (Str::isUuid($identifier)) {
+            return $identifier;
+        }
+
+        return (string) Str::uuid();
     }
 }

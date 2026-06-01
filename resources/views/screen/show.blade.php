@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<section x-data="leaderboardScreen()" x-init="start()" class="flex min-h-screen flex-col bg-zinc-950 p-6 text-white">
+<section x-data="leaderboardScreen()" x-init="start()" class="flex h-screen overflow-hidden flex-col bg-zinc-950 p-6 text-white">
     <div class="grid min-h-0 flex-1 grid-cols-[400px_1fr] gap-6">
         <aside class="flex flex-col items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 p-6">
             <div class="w-full text-center">
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <section class="mt-6 h-[24vh] min-h-[180px] overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
+    <section class="mt-6 h-[24vh] min-h-[180px] shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
         <template x-if="currentProvider()">
             <div class="flex h-full w-full items-center justify-center">
                 <img
