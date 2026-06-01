@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<section x-data="leaderboardScreen()" x-init="start()" class="flex h-screen overflow-hidden flex-col bg-zinc-950 p-6 text-white">
+<section x-data="leaderboardScreen()" x-init="start()" class="box-border flex h-screen overflow-hidden flex-col bg-zinc-950 p-4 text-white">
     <div class="grid min-h-0 flex-1 grid-cols-[400px_1fr] gap-6">
         <aside class="flex flex-col items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 p-6">
             <div class="w-full text-center">
@@ -22,9 +22,9 @@
                 <h1 class="text-5xl font-black">Trivia Ianus SA</h1>
             </header>
 
-            <div class="min-h-0 flex-1 overflow-hidden rounded-lg border border-zinc-800">
+            <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-zinc-800">
                 <table class="w-full text-left">
-                    <thead class="bg-cyan-300 text-zinc-950">
+                    <thead class="sticky top-0 z-10 bg-cyan-300 text-zinc-950">
                         <tr>
                             <th class="px-5 py-4 text-xl">#</th>
                             <th class="px-5 py-4 text-xl">Participante</th>
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <section class="mt-6 h-[24vh] min-h-[180px] shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
+    <section class="mt-4 h-[22vh] min-h-[150px] shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
         <template x-if="currentProvider()">
             <div class="flex h-full w-full items-center justify-center">
                 <img
