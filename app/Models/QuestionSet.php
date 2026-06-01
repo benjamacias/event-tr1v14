@@ -8,11 +8,12 @@ use Illuminate\Support\Str;
 
 class QuestionSet extends Model
 {
-    protected $fillable = ['name', 'slug', 'is_active', 'sort_order'];
+    protected $fillable = ['name', 'slug', 'is_active', 'sort_order', 'show_correct_answer_on_error'];
 
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
+        'show_correct_answer_on_error' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -26,7 +27,7 @@ class QuestionSet extends Model
 
     public function questions(): HasMany
     {
-        return $this->hasMany(Question::class);
+        return $this->hasMany(Question::class)->orderBy('sort_order');
     }
 
     public function attempts(): HasMany

@@ -21,8 +21,10 @@
                     <p class="mt-3 text-xl font-bold">
                         @if ($feedback->is_correct)
                             Tu respuesta fue correcta
+                        @elseif ($attempt->questionSet->show_correct_answer_on_error)
+                            Lo sentimos, la respuesta correcta era la {{ $correctOption?->label }}: {{ $correctOption?->text }}
                         @else
-                            Lo sentimos, la respuesta correcta era la {{ $correctOption?->label }}
+                            Lo sentimos, tu respuesta fue incorrecta
                         @endif
                     </p>
                     @if ($explanation)
