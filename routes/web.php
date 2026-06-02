@@ -15,18 +15,18 @@ Route::middleware(['event.active'])->group(function () {
     Route::get('/', [ParticipantController::class, 'create'])->name('participants.create');
 
     Route::post('/participants', [ParticipantController::class, 'store'])
-        ->middleware('throttle:10,1')
+        ->middleware('throttle:120,1')
         ->name('participants.store');
 
     Route::get('/play/{attempt}', [TriviaController::class, 'show'])->name('play.show');
     Route::post('/play/{attempt}/answer', [TriviaController::class, 'answer'])
-        ->middleware('throttle:30,1')
+        ->middleware('throttle:240,1')
         ->name('play.answer');
     Route::get('/play/{attempt}/result', [TriviaController::class, 'result'])->name('play.result');
     Route::match(['get', 'post'], '/play/{attempt}/next', [TriviaController::class, 'next'])
-        ->middleware('throttle:10,1')
+        ->middleware('throttle:240,1')
         ->name('play.next');
     Route::post('/play/{attempt}/close', [TriviaController::class, 'close'])
-        ->middleware('throttle:30,1')
+        ->middleware('throttle:240,1')
         ->name('play.close');
 });
