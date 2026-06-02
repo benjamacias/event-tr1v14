@@ -23,6 +23,9 @@ Route::middleware(['event.active'])->group(function () {
         ->middleware('throttle:30,1')
         ->name('play.answer');
     Route::get('/play/{attempt}/result', [TriviaController::class, 'result'])->name('play.result');
+    Route::post('/play/{attempt}/next', [TriviaController::class, 'next'])
+        ->middleware('throttle:10,1')
+        ->name('play.next');
     Route::post('/play/{attempt}/close', [TriviaController::class, 'close'])
         ->middleware('throttle:30,1')
         ->name('play.close');

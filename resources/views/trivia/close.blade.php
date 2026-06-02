@@ -7,7 +7,10 @@
     @if ($canPlayAgain)
         <h1 class="mt-4 text-3xl font-bold leading-tight">Todavia podes participar en otra trivia.</h1>
         <p class="mt-5 text-zinc-300">Tenemos otro set disponible para este documento o dispositivo.</p>
-        <a href="{{ route('participants.create') }}" class="mt-8 block rounded-lg bg-cyan-300 px-5 py-4 text-center text-lg font-bold text-zinc-950">Participar en otra trivia</a>
+        <form method="POST" action="{{ route('play.next', $attempt) }}" class="mt-8">
+            @csrf
+            <button class="w-full rounded-lg bg-cyan-300 px-5 py-4 text-lg font-bold text-zinc-950">Continuar con la siguiente trivia</button>
+        </form>
     @else
         <h1 class="mt-4 text-3xl font-bold leading-tight">Ya participaste en todas nuestras trivias.</h1>
         <p class="mt-5 text-zinc-300">Gracias por participar.</p>

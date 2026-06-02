@@ -31,4 +31,28 @@ class StoreParticipantRequest extends FormRequest
             'consent_accepted' => ['accepted'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'required' => 'Completa el campo :attribute.',
+            'string' => 'El campo :attribute debe ser texto.',
+            'email' => 'Ingresa un mail valido.',
+            'accepted' => 'Debes aceptar las condiciones para participar.',
+            'max' => 'El campo :attribute no puede superar los :max caracteres.',
+            'min' => 'El campo :attribute debe tener al menos :min caracteres.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'full_name' => 'nombre y apellido',
+            'document_number' => 'numero de documento',
+            'email' => 'mail',
+            'phone' => 'celular',
+            'institution_role' => 'institucion/cargo',
+            'consent_accepted' => 'consentimiento',
+        ];
+    }
 }
