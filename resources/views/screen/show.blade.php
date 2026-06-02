@@ -9,13 +9,13 @@
 
 <section x-data="leaderboardScreen()" x-init="start()" data-screen-page class="box-border grid h-screen grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden bg-zinc-950 p-4 text-white">
     <header class="flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 px-6 py-3">
-        <img src="{{ asset('images/ianus-logo.png') }}" alt="IANUS S.A." class="max-h-20 max-w-full rounded-md object-contain">
+        <h1 class="text-center text-5xl font-black leading-none tracking-normal text-white">IANUS S.A.</h1>
     </header>
 
     <div class="grid min-h-0 grid-cols-[35%_minmax(0,65%)] gap-6">
         <aside class="grid min-h-0 grid-rows-[minmax(0,0.42fr)_minmax(0,0.58fr)] gap-5">
             <div class="flex min-h-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-                <img src="{{ $logoPath ? asset('storage/'.$logoPath) : asset('images/ianus-logo.png') }}" alt="IANUS S.A." class="max-h-full max-w-full object-contain">
+                <img src="{{ asset('images/ianus-logo.png') }}" alt="IANUS S.A." class="max-h-full max-w-full object-contain">
             </div>
 
             <div class="grid min-h-0 grid-rows-[minmax(0,1fr)_auto] items-center rounded-lg border border-zinc-800 bg-zinc-900 p-5">
