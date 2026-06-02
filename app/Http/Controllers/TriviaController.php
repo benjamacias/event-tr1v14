@@ -100,9 +100,13 @@ class TriviaController extends Controller
         return redirect()->route('play.show', [$attempt, 'feedback' => $answer->id]);
     }
 
-    public function result(Attempt $attempt, Settings $settings): View
+    public function result(Request $request, Attempt $attempt, Settings $settings, PlayableQuestionSetPicker $picker): View
     {
         $attempt->load(['participant', 'questionSet']);
+
+        if ($attempt->status === Attempt::STATUS_COMPLETED && ! $this->canPlayAgain($request, $attempt, $picker)) {
+            return view('trivia.finished');
+        }
 
         return view('trivia.result', [
             'attempt' => $attempt,
@@ -112,6 +116,19 @@ class TriviaController extends Controller
     }
 
     public function close(Request $request, Attempt $attempt, PlayableQuestionSetPicker $picker): View
+    {
+        $canPlayAgain = $this->canPlayAgain($request, $attempt, $picker);
+
+        if (! $canPlayAgain) {
+            return view('trivia.finished');
+        }
+
+        return view('trivia.close', [
+            'canPlayAgain' => $canPlayAgain,
+        ]);
+    }
+
+    private function canPlayAgain(Request $request, Attempt $attempt, PlayableQuestionSetPicker $picker): bool
     {
         $attempt->load('participant');
 
@@ -145,8 +162,6 @@ class TriviaController extends Controller
             $playedSetIds->merge($cookiePlayedSetIds)->unique()->values()->all()
         );
 
-        return view('trivia.close', [
-            'canPlayAgain' => $nextQuestionSet !== null,
-        ]);
+        return $nextQuestionSet !== null;
     }
 }
