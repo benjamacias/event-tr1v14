@@ -1,74 +1,87 @@
 @extends('layouts.app')
 
 @section('content')
-<section x-data="leaderboardScreen()" x-init="start()" class="box-border grid h-screen grid-rows-[minmax(0,1fr)_clamp(110px,18vh,210px)] gap-4 overflow-hidden bg-zinc-950 p-4 text-white">
-    <div class="grid min-h-0 grid-cols-[minmax(280px,360px)_1fr] gap-6">
-        <aside class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] items-center rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-            <div class="min-h-0 w-full text-center">
+<style>
+    body {
+        overflow: hidden;
+    }
+</style>
+
+<section x-data="leaderboardScreen()" x-init="start()" data-screen-page class="box-border grid h-screen grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden bg-zinc-950 p-4 text-white">
+    <header class="flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 px-6 py-3">
+        <h1 class="text-center text-5xl font-black leading-none tracking-normal text-white">IANUS S.A.</h1>
+    </header>
+
+    <div class="grid min-h-0 grid-cols-[35%_minmax(0,65%)] gap-6">
+        <aside class="grid min-h-0 grid-rows-[minmax(0,0.42fr)_minmax(0,0.58fr)] gap-5">
+            <div class="flex min-h-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 p-5">
                 @if ($logoPath)
-                    <img src="{{ asset('storage/'.$logoPath) }}" alt="Ianus SA" class="mx-auto max-h-20 object-contain 2xl:max-h-28">
+                    <img src="{{ asset('storage/'.$logoPath) }}" alt="Ianus S.A." class="max-h-full max-w-full object-contain">
                 @else
-                    <div class="text-4xl font-black 2xl:text-5xl">IANUS SA</div>
+                    <div class="text-center text-5xl font-black leading-none tracking-normal">IANUS S.A.</div>
                 @endif
             </div>
 
-            <div class="flex min-h-0 w-full items-center justify-center py-4">
-                <div class="max-h-full w-full max-w-[min(100%,42vh)] rounded-lg bg-white p-3 text-zinc-950 [&_svg]:h-auto [&_svg]:w-full">{!! $qrSvg !!}</div>
+            <div class="grid min-h-0 grid-rows-[minmax(0,1fr)_auto] items-center rounded-lg border border-zinc-800 bg-zinc-900 p-5">
+                <div class="flex min-h-0 w-full items-center justify-center">
+                    <div class="aspect-square h-full max-h-full max-w-full rounded-lg bg-white p-3 text-zinc-950 [&_svg]:h-full [&_svg]:w-full">{!! $qrSvg !!}</div>
+                </div>
+                <p class="pt-4 text-center text-2xl font-bold leading-tight">Escanea y participa</p>
             </div>
-
-            <p class="text-center text-xl font-bold leading-tight 2xl:text-2xl">Escanea y participa</p>
         </aside>
 
-        <div class="flex min-h-0 flex-col">
-            <header class="mb-5">
-                <p class="text-lg font-semibold uppercase tracking-wide text-cyan-300">Pizarra de lideres</p>
-                <h1 class="text-5xl font-black">Trivia Ianus SA</h1>
-            </header>
+        <div class="grid min-h-0 grid-rows-[minmax(0,1fr)_clamp(140px,20vh,230px)] gap-5">
+            <section class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+                <header class="border-b border-zinc-800 px-5 py-4">
+                    <p class="text-lg font-semibold uppercase tracking-normal text-cyan-300">Pizarra de lideres</p>
+                    <h2 class="text-4xl font-black leading-tight tracking-normal">Trivia Ianus S.A.</h2>
+                </header>
 
-            <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-zinc-800">
-                <table class="w-full text-left">
-                    <thead class="sticky top-0 z-10 bg-cyan-300 text-zinc-950">
-                        <tr>
-                            <th class="px-5 py-4 text-xl">#</th>
-                            <th class="px-5 py-4 text-xl">Participante</th>
-                            <th class="px-5 py-4 text-xl">Puntaje</th>
-                            <th class="px-5 py-4 text-xl">Set</th>
-                            <th class="px-5 py-4 text-xl">Tiempo</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-zinc-800 bg-zinc-900">
-                        <template x-for="(row, index) in rows" :key="index + row.name + row.set">
+                <div data-screen-participants-panel class="min-h-0 overflow-y-auto">
+                    <table class="w-full table-fixed text-left">
+                        <thead class="sticky top-0 z-10 bg-cyan-300 text-zinc-950">
                             <tr>
-                                <td class="px-5 py-4 text-2xl font-bold" x-text="index + 1"></td>
-                                <td class="px-5 py-4 text-2xl font-semibold" x-text="row.name"></td>
-                                <td class="px-5 py-4 text-2xl" x-text="row.score"></td>
-                                <td class="px-5 py-4 text-xl text-zinc-300" x-text="row.set"></td>
-                                <td class="px-5 py-4 text-2xl font-bold text-cyan-300" x-text="row.time ?? '-'"></td>
+                                <th class="w-[8%] px-5 py-4 text-xl">#</th>
+                                <th class="w-[42%] px-5 py-4 text-xl">Participante</th>
+                                <th class="w-[16%] px-5 py-4 text-xl">Puntaje</th>
+                                <th class="w-[16%] px-5 py-4 text-xl">Set</th>
+                                <th class="w-[18%] px-5 py-4 text-xl">Tiempo</th>
                             </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-800 bg-zinc-900">
+                            <template x-for="(row, index) in rows" :key="index + row.name + row.set">
+                                <tr>
+                                    <td class="px-5 py-4 text-2xl font-bold" x-text="index + 1"></td>
+                                    <td class="truncate px-5 py-4 text-2xl font-semibold" x-text="row.name"></td>
+                                    <td class="px-5 py-4 text-2xl" x-text="row.score"></td>
+                                    <td class="truncate px-5 py-4 text-xl text-zinc-300" x-text="row.set"></td>
+                                    <td class="px-5 py-4 text-2xl font-bold text-cyan-300" x-text="row.time ?? '-'"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section data-screen-banner-panel class="min-h-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
+                <template x-if="currentProvider()">
+                    <div class="flex h-full w-full items-center justify-center">
+                        <img
+                            :src="currentProvider().url"
+                            :alt="currentProvider().name"
+                            class="h-full w-full object-contain"
+                            x-on:error="markProviderFailed(currentProvider().url)"
+                        >
+                    </div>
+                </template>
+                <template x-if="! currentProvider()">
+                    <div class="flex h-full w-full items-center justify-center text-4xl font-black text-zinc-900">
+                        Publicidad
+                    </div>
+                </template>
+            </section>
         </div>
     </div>
-
-    <section class="min-h-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
-        <template x-if="currentProvider()">
-            <div class="flex h-full w-full items-center justify-center">
-                <img
-                    :src="currentProvider().url"
-                    :alt="currentProvider().name"
-                    class="h-full w-full object-contain"
-                    x-on:error="markProviderFailed(currentProvider().url)"
-                >
-            </div>
-        </template>
-        <template x-if="! currentProvider()">
-            <div class="flex h-full w-full items-center justify-center text-4xl font-black text-zinc-900">
-                Publicidad
-            </div>
-        </template>
-    </section>
 </section>
 
 <script>
