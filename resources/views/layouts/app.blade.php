@@ -7,7 +7,7 @@
     <title>{{ config('app.name', 'Ianus Event Trivia') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-zinc-950 text-white antialiased">
+<body class="min-h-screen bg-[#003B5C] text-white antialiased">
     <main>
         @yield('content')
     </main>
