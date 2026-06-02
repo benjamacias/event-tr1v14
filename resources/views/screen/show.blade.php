@@ -1,19 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
-<section x-data="leaderboardScreen()" x-init="start()" class="box-border flex h-screen overflow-hidden flex-col bg-zinc-950 p-4 text-white">
-    <div class="grid min-h-0 flex-1 grid-cols-[400px_1fr] gap-6">
-        <aside class="flex flex-col items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-            <div class="w-full text-center">
+<section x-data="leaderboardScreen()" x-init="start()" class="box-border grid h-screen grid-rows-[minmax(0,1fr)_clamp(110px,18vh,210px)] gap-4 overflow-hidden bg-zinc-950 p-4 text-white">
+    <div class="grid min-h-0 grid-cols-[minmax(280px,360px)_1fr] gap-6">
+        <aside class="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] items-center rounded-lg border border-zinc-800 bg-zinc-900 p-5">
+            <div class="min-h-0 w-full text-center">
                 @if ($logoPath)
-                    <img src="{{ asset('storage/'.$logoPath) }}" alt="Ianus SA" class="mx-auto max-h-32 object-contain">
+                    <img src="{{ asset('storage/'.$logoPath) }}" alt="Ianus SA" class="mx-auto max-h-20 object-contain 2xl:max-h-28">
                 @else
-                    <div class="text-5xl font-black">IANUS SA</div>
+                    <div class="text-4xl font-black 2xl:text-5xl">IANUS SA</div>
                 @endif
             </div>
 
-            <div class="rounded-lg bg-white p-4 text-zinc-950">{!! $qrSvg !!}</div>
-            <p class="text-center text-2xl font-bold">Escanea y participa</p>
+            <div class="flex min-h-0 w-full items-center justify-center py-4">
+                <div class="max-h-full w-full max-w-[min(100%,42vh)] rounded-lg bg-white p-3 text-zinc-950 [&_svg]:h-auto [&_svg]:w-full">{!! $qrSvg !!}</div>
+            </div>
+
+            <p class="text-center text-xl font-bold leading-tight 2xl:text-2xl">Escanea y participa</p>
         </aside>
 
         <div class="flex min-h-0 flex-col">
@@ -49,7 +52,7 @@
         </div>
     </div>
 
-    <section class="mt-4 h-[22vh] min-h-[150px] shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
+    <section class="min-h-0 overflow-hidden rounded-lg border border-zinc-800 bg-white p-0">
         <template x-if="currentProvider()">
             <div class="flex h-full w-full items-center justify-center">
                 <img
