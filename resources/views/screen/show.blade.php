@@ -46,7 +46,7 @@
                                     <td class="px-5 py-4 text-2xl font-bold" x-text="index + 1"></td>
                                     <td class="truncate px-5 py-4 text-2xl font-semibold" x-text="row.name"></td>
                                     <td class="px-5 py-4 text-2xl" x-text="row.score"></td>
-                                    <td class="truncate px-5 py-4 text-xl text-white/80" x-text="row.set"></td>
+                                    <td class="break-words px-5 py-4 text-xl leading-tight text-white/80" x-text="row.set"></td>
                                     <td class="px-5 py-4 text-2xl font-bold text-[#00B5E2]" x-text="row.time ?? '-'"></td>
                                 </tr>
                             </template>
@@ -83,15 +83,93 @@ function leaderboardScreen() {
         providerLogos: @json($providerAds),
         providerIndex: 0,
         failedProviderUrls: {},
+        participantsPanel: null,
+        scrollSpeed: 18,
+        lastScrollFrame: null,
         start() {
+            this.participantsPanel = document.querySelector('[data-screen-participants-panel]');
             this.load();
             setInterval(() => this.load(), 3000);
             setInterval(() => this.nextProvider(), 3500);
+            window.addEventListener('keydown', (event) => this.handleKeydown(event));
+            requestAnimationFrame((timestamp) => this.autoScroll(timestamp));
         },
         async load() {
             const response = await fetch('{{ route('api.leaderboard') }}');
             const payload = await response.json();
             this.rows = payload.data;
+
+            this.$nextTick(() => this.normalizeScroll());
+        },
+        autoScroll(timestamp) {
+            if (! this.participantsPanel) {
+                requestAnimationFrame((nextTimestamp) => this.autoScroll(nextTimestamp));
+                return;
+            }
+
+            if (this.lastScrollFrame === null) {
+                this.lastScrollFrame = timestamp;
+                requestAnimationFrame((nextTimestamp) => this.autoScroll(nextTimestamp));
+                return;
+            }
+
+            const elapsedSeconds = Math.min((timestamp - this.lastScrollFrame) / 1000, 0.1);
+            this.lastScrollFrame = timestamp;
+
+            if (this.canScrollParticipants()) {
+                const maxScrollTop = this.maxParticipantsScrollTop();
+
+                if (this.participantsPanel.scrollTop >= maxScrollTop - 1) {
+                    this.participantsPanel.scrollTop = 0;
+                } else {
+                    this.participantsPanel.scrollTop = Math.min(
+                        this.participantsPanel.scrollTop + (this.scrollSpeed * elapsedSeconds),
+                        maxScrollTop
+                    );
+                }
+            } else {
+                this.participantsPanel.scrollTop = 0;
+            }
+
+            requestAnimationFrame((nextTimestamp) => this.autoScroll(nextTimestamp));
+        },
+        handleKeydown(event) {
+            if (! document.hasFocus() || ! ['ArrowUp', 'PageUp', 'Home'].includes(event.key)) {
+                return;
+            }
+
+            event.preventDefault();
+            this.scrollParticipantsToTop();
+        },
+        scrollParticipantsToTop() {
+            if (this.participantsPanel) {
+                this.participantsPanel.scrollTop = 0;
+            }
+        },
+        normalizeScroll() {
+            if (! this.participantsPanel) {
+                return;
+            }
+
+            if (! this.canScrollParticipants()) {
+                this.participantsPanel.scrollTop = 0;
+                return;
+            }
+
+            this.participantsPanel.scrollTop = Math.min(
+                this.participantsPanel.scrollTop,
+                this.maxParticipantsScrollTop()
+            );
+        },
+        canScrollParticipants() {
+            return this.maxParticipantsScrollTop() > 0;
+        },
+        maxParticipantsScrollTop() {
+            if (! this.participantsPanel) {
+                return 0;
+            }
+
+            return Math.max(0, this.participantsPanel.scrollHeight - this.participantsPanel.clientHeight);
         },
         availableProviders() {
             return this.providerLogos.filter((provider) => provider.url && ! this.failedProviderUrls[provider.url]);
