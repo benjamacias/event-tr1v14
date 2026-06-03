@@ -5,18 +5,35 @@
     body {
         overflow: hidden;
     }
+
+    [data-screen-logo-card] img {
+        width: min(68%, 260px, 28vh);
+        height: auto;
+        max-height: calc(100% - 1.5rem);
+    }
+
+    [data-screen-qr-code] {
+        width: min(82%, 410px, 44vh);
+        max-width: calc(100% - 1rem);
+    }
+
+    [data-screen-qr-code] svg {
+        display: block;
+        height: 100%;
+        width: 100%;
+    }
 </style>
 
 <section x-data="leaderboardScreen()" x-init="start()" data-screen-page class="box-border grid h-screen grid-rows-[minmax(0,1fr)] overflow-hidden bg-[#003B5C] p-4 text-white">
     <div class="grid min-h-0 grid-cols-[35%_minmax(0,65%)] gap-6">
-        <aside class="grid min-h-0 grid-rows-[minmax(0,0.42fr)_minmax(0,0.58fr)] gap-5">
-            <div class="flex min-h-0 items-center justify-center rounded-lg border border-[#00B5E2]/35 bg-[#003B5C] p-5">
-                <img src="{{ asset('images/ianus-logo.png') }}" alt="IANUS S.A." class="max-h-full max-w-full object-contain">
+        <aside class="grid min-h-0 grid-rows-[minmax(0,0.44fr)_minmax(0,0.56fr)] gap-5">
+            <div data-screen-logo-card class="flex min-h-0 items-center justify-center rounded-lg border border-[#00B5E2]/35 bg-[#003B5C] p-5">
+                <img src="{{ asset('images/ianus-logo.png') }}" alt="IANUS S.A." class="object-contain">
             </div>
 
             <div class="grid min-h-0 grid-rows-[minmax(0,1fr)_auto] items-center rounded-lg border border-[#00B5E2]/35 bg-[#003B5C] p-5">
                 <div class="flex min-h-0 w-full items-center justify-center">
-                    <div class="aspect-square h-full max-h-full max-w-full rounded-lg bg-white p-3 text-[#003B5C] [&_svg]:h-full [&_svg]:w-full">{!! $qrSvg !!}</div>
+                    <div data-screen-qr-code class="aspect-square rounded-lg bg-white p-3 text-[#003B5C]">{!! $qrSvg !!}</div>
                 </div>
                 <p class="pt-4 text-center text-2xl font-bold leading-tight">Escanea y participa</p>
             </div>
@@ -34,9 +51,9 @@
                         <thead class="sticky top-0 z-10 bg-[#00B5E2] text-[#003B5C]">
                             <tr>
                                 <th class="w-[8%] px-5 py-4 text-xl">#</th>
-                                <th class="w-[42%] px-5 py-4 text-xl">Participante</th>
+                                <th class="w-[34%] px-5 py-4 text-xl">Participante</th>
                                 <th class="w-[16%] px-5 py-4 text-xl">Puntaje</th>
-                                <th class="w-[16%] px-5 py-4 text-xl">Set</th>
+                                <th class="w-[24%] px-5 py-4 text-xl">Set</th>
                                 <th class="w-[18%] px-5 py-4 text-xl">Tiempo</th>
                             </tr>
                         </thead>
