@@ -84,7 +84,8 @@ function leaderboardScreen() {
         providerIndex: 0,
         failedProviderUrls: {},
         participantsPanel: null,
-        scrollSpeed: 18,
+        scrollSpeed: 36,
+        scrollRemainder: 0,
         lastScrollFrame: null,
         start() {
             this.participantsPanel = document.querySelector('[data-screen-participants-panel]');
@@ -120,14 +121,25 @@ function leaderboardScreen() {
                 const maxScrollTop = this.maxParticipantsScrollTop();
 
                 if (this.participantsPanel.scrollTop >= maxScrollTop - 1) {
+                    this.scrollRemainder = 0;
                     this.participantsPanel.scrollTop = 0;
                 } else {
+                    const scrollDistance = (this.scrollSpeed * elapsedSeconds) + this.scrollRemainder;
+                    const scrollPixels = Math.floor(scrollDistance);
+                    this.scrollRemainder = scrollDistance - scrollPixels;
+
+                    if (scrollPixels === 0) {
+                        requestAnimationFrame((nextTimestamp) => this.autoScroll(nextTimestamp));
+                        return;
+                    }
+
                     this.participantsPanel.scrollTop = Math.min(
-                        this.participantsPanel.scrollTop + (this.scrollSpeed * elapsedSeconds),
+                        this.participantsPanel.scrollTop + scrollPixels,
                         maxScrollTop
                     );
                 }
             } else {
+                this.scrollRemainder = 0;
                 this.participantsPanel.scrollTop = 0;
             }
 
@@ -143,6 +155,7 @@ function leaderboardScreen() {
         },
         scrollParticipantsToTop() {
             if (this.participantsPanel) {
+                this.scrollRemainder = 0;
                 this.participantsPanel.scrollTop = 0;
             }
         },
