@@ -111,7 +111,7 @@ function leaderboardScreen() {
             this.scheduleScrollDelay(performance.now());
             this.load();
             setInterval(() => this.load(), 3000);
-            setInterval(() => this.nextProvider(), 3500);
+            setInterval(() => this.nextProvider(), 5500);
             window.addEventListener('keydown', (event) => this.handleKeydown(event));
             requestAnimationFrame((timestamp) => this.autoScroll(timestamp));
         },
