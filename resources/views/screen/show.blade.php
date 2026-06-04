@@ -102,10 +102,13 @@ function leaderboardScreen() {
         failedProviderUrls: {},
         participantsPanel: null,
         scrollSpeed: 36,
+        scrollDelayMs: 60000,
         scrollRemainder: 0,
         lastScrollFrame: null,
+        scrollResumeAt: 0,
         start() {
             this.participantsPanel = document.querySelector('[data-screen-participants-panel]');
+            this.scheduleScrollDelay(performance.now());
             this.load();
             setInterval(() => this.load(), 3000);
             setInterval(() => this.nextProvider(), 3500);
@@ -131,6 +134,12 @@ function leaderboardScreen() {
                 return;
             }
 
+            if (timestamp < this.scrollResumeAt) {
+                this.lastScrollFrame = timestamp;
+                requestAnimationFrame((nextTimestamp) => this.autoScroll(nextTimestamp));
+                return;
+            }
+
             const elapsedSeconds = Math.min((timestamp - this.lastScrollFrame) / 1000, 0.1);
             this.lastScrollFrame = timestamp;
 
@@ -138,8 +147,8 @@ function leaderboardScreen() {
                 const maxScrollTop = this.maxParticipantsScrollTop();
 
                 if (this.participantsPanel.scrollTop >= maxScrollTop - 1) {
-                    this.scrollRemainder = 0;
-                    this.participantsPanel.scrollTop = 0;
+                    this.scrollParticipantsToTop();
+                    this.scheduleScrollDelay(timestamp);
                 } else {
                     const scrollDistance = (this.scrollSpeed * elapsedSeconds) + this.scrollRemainder;
                     const scrollPixels = Math.floor(scrollDistance);
@@ -169,12 +178,18 @@ function leaderboardScreen() {
 
             event.preventDefault();
             this.scrollParticipantsToTop();
+            this.scheduleScrollDelay(performance.now());
         },
         scrollParticipantsToTop() {
             if (this.participantsPanel) {
                 this.scrollRemainder = 0;
                 this.participantsPanel.scrollTop = 0;
             }
+        },
+        scheduleScrollDelay(timestamp) {
+            this.scrollRemainder = 0;
+            this.lastScrollFrame = timestamp;
+            this.scrollResumeAt = timestamp + this.scrollDelayMs;
         },
         normalizeScroll() {
             if (! this.participantsPanel) {
